@@ -1,0 +1,96 @@
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.Inet6Address;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Main {
+
+private static Socket dataConnection;
+
+public static void main(String[] args) {
+try {
+String user = "";
+Map<String, String> login = new HashMap<>();
+login.put("nassima", "hamz");
+
+var serv = new ServerSocket(4221);
+Socket s2 = serv.accept();
+
+OutputStream os = s2.getOutputStream();
+DataOutputStream dos = new DataOutputStream(os);
+InputStream is = s2.getInputStream();
+InputStreamReader isr = new InputStreamReader(is);
+BufferedReader br = new BufferedReader(isr);
+String log = br.readLine();
+dos.writeBytes("220 Service ready\r\n");
+
+while (log != null) {
+String[] tabCommande = log.split(" ");
+String myCmd = tabCommande[0].toUpperCase();
+switch (myCmd) {
+
+case "USER":
+if (login.containsKey(log.substring(5))) {
+user = log.substring(5);
+dos.writeBytes("331 username ok , insert pass \r\n");
+} else {
+dos.writeBytes("User is not logged \r\n");
+}
+break;
+
+case "PASS":
+if (login.get(user).equals(log.substring(5))) {
+dos.writeBytes("230 User est logged \r\n");
+} else {
+dos.writeBytes("pass nest pas valide \r\n");
+}
+System.out.println(myCmd);
+
+break;
+
+case "SYST":
+System.out.println(myCmd );
+
+dos.writeBytes("215 linux type \r\n");
+break;
+case "QUIT":
+System.out.println(myCmd );
+
+dos.writeBytes("211 quit \r\n");
+break;
+
+case "FEAT":
+System.out.println(myCmd );
+
+dos.writeBytes("211 feat \r\n");
+break;
+case "EPSV":
+System.out.println(myCmd );
+
+dos.writeBytes("229 Entering Extended Passive Mode (|||4222) \r\n");
+var serv1 = new ServerSocket(4222);
+Socket s1 = serv1.accept();
+}
+System.out.println(myCmd );
+
+log = br.readLine();
+
+}
+
+} catch (Exception e) {
+System.out.println(e);
+}
+}
+
+}
